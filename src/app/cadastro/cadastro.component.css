@@ -74,3 +74,19 @@
   line-height: 18px;
   color: var(--vermelho);
 }
+
+/* 
+
+:not(form): Exclui os elementos form da seleção. 
+
+Ele aplica a regra de estilo (border-color: red; color: red;) a todos os elementos que:
+
+Possuem as classes .ng-touched e .ng-invalid.
+Não são um elemento form.
+
+
+*/
+.ng-touched.ng-invalid:not(form) {
+  border-color: red;
+  color: red;
+}
