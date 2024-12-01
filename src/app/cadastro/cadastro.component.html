@@ -1,14 +1,114 @@
 <main class="principal">
   <h2 class="principal__titulo">Dados do cadastro</h2>
+<!-- 
+  
+O atributo ngModel é uma diretiva do Angular que liga um valor de um campo do formulário 
+ao modelo (variável) no componente TypeScript. 
+Essa funcionalidade é parte do Formulário Template-Driven.
 
+Como funciona:
+
+Ele cria uma ligação bidirecional entre o campo <input> no template e a variável no componente.
+Quando o usuário digita no campo, a variável é atualizada automaticamente.
+Se o valor da variável for alterado no TypeScript, o campo será atualizado automaticamente no HTML.
+
+O Angular possui um sistema de validação robusto. No código, você está usando um objeto de controle para acessar o estado e os erros do campo: f.controls['email'].
+
+O que é:
+
+Um FormControl é a unidade básica de um formulário reativo.
+Ele gerencia o valor e o estado do campo (válido, inválido, tocado, sujo, etc.).
+No caso do seu código, f.controls['email'] está acessando o controle do campo email.
+
+
+Propriedades usadas:
+
+invalid: Retorna true se o campo não for válido.
+touched: Retorna true se o usuário interagiu com o campo (clicou ou saiu dele).
+errors: Um objeto que lista os erros encontrados no campo.
+required: Indica que o campo é obrigatório.
+pattern: Indica que o valor não segue o padrão especificado.
+
+Contexto Geral do Angular Forms
+Existem dois tipos principais de formulários no Angular:
+
+Formulários baseados em Template (Template-Driven Forms):
+Usam o ngModel.
+São mais simples e ideais para formulários pequenos.
+Exemplos como o fornecido fazem parte desse estilo.
+Formulários Reativos (Reactive Forms):
+Utilizam o FormControl, FormGroup, e FormBuilder.
+Ideal para formulários complexos e quando é necessário maior controle sobre os estados e validações.
+
+
+Se você está usando apenas ngModel, significa que está adotando o estilo Template-Driven Forms no Angular. Nesse caso, as validações e o controle do formulário são feitos diretamente no template HTML, com a ajuda do Angular para monitorar o estado dos campos.
+
+Vou explicar como isso funciona e ajustar o seu exemplo para um cenário puramente baseado em ngModel.
+
+Template-Driven Forms com ngModel
+Com o ngModel, o Angular automaticamente cria e gerencia objetos de controle para cada campo do formulário, como se fosse um "mini FormControl" por trás dos panos. Além disso, você pode acessar os estados e erros dos campos diretamente no template.
+
+Seu Código Ajustado:
+Com base em Template-Driven Forms, o código pode ficar assim:
+
+html
+Copiar código
+<form #formulario="ngForm">
+  <div class="formulario__campo">
+    <label class="campo__etiqueta" for="email">E-mail</label>
+    <input
+      name="email"
+      id="email"
+      type="email"
+      class="campo__escrita"
+      ngModel
+      required
+      pattern="^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
+      #emailControl="ngModel"
+    />
+    <div *ngIf="emailControl.invalid && emailControl.touched">
+      <span class="erro__texto" *ngIf="emailControl.errors?.['required']">
+        O campo email deve ser preenchido
+      </span>
+      <span class="erro__texto" *ngIf="emailControl.errors?.['pattern']">
+        O campo de email deve seguir este padrão: "exemplo@dominio.com"
+      </span>
+    </div>
+  </div>
+</form>
+
+Principais Ajustes e Explicação
+
+1. Ligação com o Formulário
+
+O formulário recebe uma referência com #formulario="ngForm".
+Isso permite que o Angular gerencie o estado de todo o formulário.
+Você pode acessar o estado e validade do formulário com essa variável, se necessário.
+
+2. Ligação com o Campo (Control)
+
+A diretiva ngModel é aplicada no <input>, para que o Angular crie automaticamente o controle para esse campo.
+O atributo #emailControl="ngModel" dá uma referência direta ao controle do campo email, permitindo:
+Checar estados como invalid e touched.
+Acessar os erros associados ao controle (emailControl.errors).
+
+-->
   <form class="principal__formulario" id="formulario" #f="ngForm" (ngSubmit)="cadastrar(f)">
     <h3 class="principal__subtitulo">Dados pessoais</h3>
     <div class="formulario__campo">
       <label class="campo__etiqueta" for="nome">Nome Completo</label>
-      <input name="nome" id="nome" class="campo__escrita" ngModel required minlength="2">
-      <div *ngIf="f.controls['nome']?.invalid && f.controls['nome']?.touched">
-        <span class="erro__texto" *ngIf="f.controls['nome']?.errors?.['required']">O campo nome deve ser preenchido </span>
-        <span class="erro__texto" *ngIf="f.controls['nome']?.errors?.['minlength']">O campo nome deve ter ao menos 2 caracteres </span>
+      <input 
+        name="nome" 
+        id="nome" 
+        class="campo__escrita" 
+        ngModel 
+        required 
+        minlength="2"
+        #nome="ngModel"
+      >
+      <div *ngIf="nome?.invalid && nome?.touched">
+        <app-mensagem *ngIf="nome?.errors?.['required']" mensagem="O campo nome deve ser preenchido"></app-mensagem>
+        <app-mensagem *ngIf="nome?.errors?.['minlength']" mensagem="O campo nome deve ter ao menos 2 caracteres"></app-mensagem>
       </div>
     </div>
     <div class="formulario__dupla">
@@ -21,17 +121,22 @@
       </div>
       <div class="formulario__campo">
         <label class="campo__etiqueta" for="telefone">Contato</label>
-        <input name="telefone" id="telefone" type="tel" placeholder="(XX) XXXXX-XXXX" class="campo__escrita" ngModel required/>
+        <input name="telefone" id="telefone" type="tel" placeholder="(XX) XXXXX-XXXX" class="campo__escrita" ngModel required pattern="(\(?\d{2}\)?\s?)(\d{5}\-?\d{4})"  />
         <div *ngIf="f.controls['telefone']?.invalid && f.controls['telefone']?.touched">
           <span class="erro__texto" *ngIf="f.controls['telefone']?.errors?.['required']">O campo telefone deve ser preenchido </span>
+          <span class="erro__texto" *ngIf="f.controls['telefone']?.errors?.
+          ['pattern']">O campo de telefone deve seguir este padrão: "(XX) XXXXX-XXXX"</span>
         </div>
       </div>
     </div>
     <div class="formulario__campo">
       <label class="campo__etiqueta" for="email">E-mail</label>
-      <input name="email" id="email" type="email" class="campo__escrita" ngModel required />
+      <input name="email" id="email" type="email" class="campo__escrita" ngModel required pattern="^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$"/>
       <div *ngIf="f.controls['email']?.invalid && f.controls['email']?.touched">
         <span class="erro__texto" *ngIf="f.controls['email']?.errors?.['required']">O campo email deve ser preenchido </span>
+        <!-- <span class="erro__texto" *ngIf="f.controls['email']?.errors?.['email']" pattern="">O campo email deve seguir o padrão exemplo@dominio.com </span> -->
+        <span class="erro__texto" *ngIf="f.controls['email']?.errors?.
+          ['pattern']">O campo de email deve seguir este padrão: "exemplo@dominio.com"</span>
       </div>
     </div>
 
