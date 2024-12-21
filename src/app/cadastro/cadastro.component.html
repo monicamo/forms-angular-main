@@ -92,6 +92,13 @@ O atributo #emailControl="ngModel" dá uma referência direta ao controle do cam
 Checar estados como invalid e touched.
 Acessar os erros associados ao controle (emailControl.errors).
 
+variável de referência
+Importante ressaltar que essa variável permite o acesso apenas no template, sendo assim não é possível usá-la dentro do componente.
+
+Com a variável criada, chame a tag do MensagemComponent, lembre-se de abrir e fechar a tag. E dentro da tag de abertura crie diretiva *ngIf da mesma forma que criamos na tag de small. Use a variável local para criar as condicionais da div e dos componentes de mensagens.
+
+
+
 -->
   <form class="principal__formulario" id="formulario" #f="ngForm" (ngSubmit)="cadastrar(f)">
     <h3 class="principal__subtitulo">Dados pessoais</h3>
@@ -114,29 +121,55 @@ Acessar os erros associados ao controle (emailControl.errors).
     <div class="formulario__dupla">
       <div class="formulario__campo">
         <label class="campo__etiqueta" for="nascimento">Nascimento</label>
-        <input name="nascimento" id="nascimento" type="date" class="campo__escrita" ngModel required />
-        <div *ngIf="f.controls['nascimento']?.invalid && f.controls['nascimento']?.touched">
-          <span class="erro__texto" *ngIf="f.controls['nascimento']?.errors?.['required']">O campo nascimento deve ser preenchido </span>
+        <input 
+          name="nascimento" 
+          id="nascimento" 
+          type="date" 
+          class="campo__escrita" 
+          ngModel 
+          maiorIdadeValidator
+          required 
+          #nascimento="ngModel"
+          />
+        <div *ngIf="nascimento?.invalid && nascimento?.touched">
+          <app-mensagem *ngIf="nascimento?.errors?.['required']" mensagem="O campo nascimento deve ser preenchido"></app-mensagem>
+          <app-mensagem *ngIf="nascimento?.errors?.['maiorIdadeValidator']" mensagem="O usuário deve ter mais de 18 anos"></app-mensagem>
         </div>
       </div>
       <div class="formulario__campo">
         <label class="campo__etiqueta" for="telefone">Contato</label>
-        <input name="telefone" id="telefone" type="tel" placeholder="(XX) XXXXX-XXXX" class="campo__escrita" ngModel required pattern="(\(?\d{2}\)?\s?)(\d{5}\-?\d{4})"  />
-        <div *ngIf="f.controls['telefone']?.invalid && f.controls['telefone']?.touched">
-          <span class="erro__texto" *ngIf="f.controls['telefone']?.errors?.['required']">O campo telefone deve ser preenchido </span>
-          <span class="erro__texto" *ngIf="f.controls['telefone']?.errors?.
-          ['pattern']">O campo de telefone deve seguir este padrão: "(XX) XXXXX-XXXX"</span>
+        <input 
+          name="telefone" 
+          id="telefone" 
+          type="tel" 
+          placeholder="(XX) XXXXX-XXXX" 
+          class="campo__escrita" 
+          ngModel 
+          required 
+          pattern="(\(?\d{2}\)?\s?)(\d{5}\-?\d{4})"
+          #telefone ="ngModel"  
+        />
+        <div *ngIf="telefone?.invalid && telefone?.touched">
+          <app-mensagem *ngIf="telefone?.errors?.['required']" mensagem="O campo telefone deve ser preenchido"></app-mensagem>
+          <app-mensagem *ngIf="telefone?.errors?.['pattern']" mensagem='O campo de telefone deve seguir este padrão: "(XX) XXXXX-XXXX"'></app-mensagem>
         </div>
       </div>
     </div>
     <div class="formulario__campo">
       <label class="campo__etiqueta" for="email">E-mail</label>
-      <input name="email" id="email" type="email" class="campo__escrita" ngModel required pattern="^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$"/>
-      <div *ngIf="f.controls['email']?.invalid && f.controls['email']?.touched">
-        <span class="erro__texto" *ngIf="f.controls['email']?.errors?.['required']">O campo email deve ser preenchido </span>
-        <!-- <span class="erro__texto" *ngIf="f.controls['email']?.errors?.['email']" pattern="">O campo email deve seguir o padrão exemplo@dominio.com </span> -->
-        <span class="erro__texto" *ngIf="f.controls['email']?.errors?.
-          ['pattern']">O campo de email deve seguir este padrão: "exemplo@dominio.com"</span>
+      <input 
+        name="email" 
+        id="email" 
+        type="email" 
+        class="campo__escrita" 
+        ngModel 
+        required 
+        pattern="^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$"
+        #email="ngModel"
+      />
+      <div *ngIf="email?.invalid && email?.touched">
+        <app-mensagem *ngIf="email?.errors?.['required']" mensagem="O campo email deve ser preenchido"></app-mensagem>
+        <app-mensagem *ngIf="email?.errors?.['pattern']" mensagem='O campo de email deve seguir este padrão: "exemplo@dominio.com"'></app-mensagem>
       </div>
     </div>
 
